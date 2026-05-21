@@ -1,0 +1,24 @@
+name: Deploy to Aliyun Server
+
+on:
+  push:
+    branches: [ main ] # 只有推送到main分支时触发部署
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /path/to/your/project # 替换成你服务器上的项目路径
+            git pull origin main
+            # 这里可以加你的构建/重启命令，比如 npm install、pm2 restart 等
