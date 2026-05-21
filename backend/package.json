@@ -1,0 +1,14 @@
+{
+  "name": "lanyuel-backend",
+  "version": "1.0.0",
+  "description": "蓝月亮小区果蔬预定系统后端",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "body-parser": "^1.19.0",
+    "mysql": "^2.18.1"
+  }
+}
