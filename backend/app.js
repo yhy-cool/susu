@@ -7,8 +7,6 @@ const app = express();
 // 中间件
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 app.use(bodyParser.json({ limit: '50mb' }));
-app.use(express.static(path.join(__dirname, 'public')));
-
 // 添加CORS中间件
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -17,13 +15,17 @@ app.use((req, res, next) => {
   next();
 });
 
-// 路由
+// API 路由
 const indexRouter = require('./routes/index');
 app.use('/', indexRouter);
 
-// 404处理
-app.use((req, res, next) => {
-  res.status(404).send('Not Found');
+// 前端静态文件（Vue 构建产物）
+const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
+app.use(express.static(frontendDist));
+
+// SPA fallback：所有非 API 请求返回 index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendDist, 'index.html'));
 });
 
 // 错误处理
