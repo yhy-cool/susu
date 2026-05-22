@@ -2,7 +2,8 @@ module.exports = {
   apps: [
     {
       name: 'susu',
-      script: 'app.js',
+      script: 'backend/app.js',
+      cwd: '/www/susu',
       instances: 1,
       autorestart: true,
       watch: false,

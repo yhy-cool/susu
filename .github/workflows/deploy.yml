@@ -24,7 +24,7 @@ jobs:
           script: |
             cd /www/susu
             git pull origin main
+            cd backend
             npm install --production
-            npm run build 2>/dev/null || echo "skip build"
-            pm2 reload susu 2>/dev/null || pm2 start ecosystem.config.js 2>/dev/null || pm2 start app.js --name susu
+            pm2 reload susu 2>/dev/null || pm2 start ecosystem.config.js --cwd /www/susu
             pm2 save
