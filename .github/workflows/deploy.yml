@@ -38,9 +38,13 @@ jobs:
             echo '{"registry-mirrors":["https://docker.1panel.live"]}' > /etc/docker/daemon.json
             systemctl restart docker
             sleep 3
+            docker network create susu-net 2>/dev/null || true
+            # MySQL 容器（首次部署时自动创建，后续不重复创建）
+            docker inspect susu-mysql >/dev/null 2>&1 || docker run -d --name susu-mysql --network susu-net -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=lanyuel -v susu-mysql-data:/var/lib/mysql --restart=always mysql:8.0 --default-authentication-plugin=mysql_native_password
+            sleep 5
+            # 更新 susu 应用容器
             docker stop susu-container 2>/dev/null || true
             docker rm susu-container 2>/dev/null || true
             docker pull yhycool/susu-app:latest
-            docker network create susu-net 2>/dev/null || true
             docker run -d --name susu-container --network susu-net -p 3000:3001 --restart=always -e DB_HOST=susu-mysql -e DB_USER=root -e DB_PASSWORD=root -e DB_NAME=lanyuel yhycool/susu-app:latest
             docker image prune -f
