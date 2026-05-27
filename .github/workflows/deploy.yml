@@ -16,11 +16,13 @@ jobs:
 
       - name: Deploy to server via SSH
         uses: appleboy/ssh-action@v1.2.2
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
+with:
+  host: ${{ secrets.SSH_HOST }}
+  username: ${{ secrets.SSH_USERNAME }}
+  key: ${{ secrets.SSH_PRIVATE_KEY }}
+  port: 22
+  timeout: 60s                  # 延长超时时间
+  ssh_options: "-o StrictHostKeyChecking=no -o ConnectTimeout=30"
           script: |
             cd /www/susu
             git pull origin main
