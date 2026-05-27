@@ -11,5 +11,5 @@ RUN cd backend && npm install
 # 暴露端口
 EXPOSE 3000
 
-# 启动后端（如果你的入口不是server.js，改成对应的文件名）
-CMD ["node", "backend/server.js"]
+# 启动后端
+CMD ["node", "backend/app.js"]

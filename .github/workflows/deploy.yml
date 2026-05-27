@@ -33,8 +33,13 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            docker stop susu-container || true
-            docker rm susu-container || true
+            # 配置可用 Docker 镜像源（解决国内服务器无法直连 Docker Hub 问题）
+            mkdir -p /etc/docker
+            echo '{"registry-mirrors":["https://docker.1panel.live"]}' > /etc/docker/daemon.json
+            systemctl restart docker
+            sleep 3
+            docker stop susu-container 2>/dev/null || true
+            docker rm susu-container 2>/dev/null || true
             docker pull yhycool/susu-app:latest
             docker run -d --name susu-container -p 3000:3000 --restart=always yhycool/susu-app:latest
             docker image prune -f
