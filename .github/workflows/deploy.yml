@@ -1,57 +1,31 @@
-name: Build and Deploy to Server
+name: Deploy to Aliyun Server
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  build-and-deploy:
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 1. 登录 Docker Hub（用官方 Action，更安全）
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      # 2. 构建并推送镜像（带 Git SHA 版本号，方便回滚）
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: |
-            yhycool/susu-app:latest
-            yhycool/susu-app:${{ github.sha }}
-
-      # 3. 服务器只做：拉取镜像 → 运行容器（不编译！不拉代码！）
-      - name: Deploy to Aliyun Server
+      - name: Deploy to server via SSH
         uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
+          command_timeout: 10m
           script: |
-            set -e  # 出错立即退出
-            
-            # 停止并删除旧容器
-            docker stop susu-container || true
-            docker rm susu-container || true
-            
-            # 拉取最新镜像
-            docker pull yhycool/susu-app:latest
-            
-            # 运行新容器
-            docker run -d \
-              --name susu-container \
-              -p 3000:3000 \
-              --restart=always \
-              yhycool/susu-app:latest
-            
-            # 清理旧镜像（防止磁盘爆满）
-            docker image prune -f
+            cd /www/susu
+            git pull origin main
+            cd backend
+            npm install --production
+            pm2 reload susu 2>/dev/null || pm2 start ecosystem.config.js --cwd /www/susu
+            pm2 save
