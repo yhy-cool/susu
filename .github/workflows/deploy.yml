@@ -41,5 +41,6 @@ jobs:
             docker stop susu-container 2>/dev/null || true
             docker rm susu-container 2>/dev/null || true
             docker pull yhycool/susu-app:latest
-            docker run -d --name susu-container -p 3000:3001 --restart=always yhycool/susu-app:latest
+            docker network create susu-net 2>/dev/null || true
+            docker run -d --name susu-container --network susu-net -p 3000:3001 --restart=always -e DB_HOST=susu-mysql -e DB_USER=root -e DB_PASSWORD=root -e DB_NAME=lanyuel yhycool/susu-app:latest
             docker image prune -f

@@ -3,10 +3,10 @@ const mysql = require('mysql');
 
 // MySQL连接配置
 const dbConfig = {
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'lanyuel'
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || 'root',
+  database: process.env.DB_NAME || 'lanyuel'
 };
 
 // 创建连接池
