@@ -41,5 +41,5 @@ jobs:
             docker stop susu-container 2>/dev/null || true
             docker rm susu-container 2>/dev/null || true
             docker pull yhycool/susu-app:latest
-            docker run -d --name susu-container -p 3000:3000 --restart=always yhycool/susu-app:latest
+            docker run -d --name susu-container -p 3000:3001 --restart=always yhycool/susu-app:latest
             docker image prune -f
